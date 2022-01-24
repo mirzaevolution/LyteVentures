@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LyteVentures.Todo.DataStorageLayers\LyteVentures.Todo.DataStorageLayers.csproj" />
+    <ProjectReference Include="..\LyteVentures.Todo.Repositories\LyteVentures.Todo.Repositories.csproj" />
+    <ProjectReference Include="..\LyteVentures.Todo.Services\LyteVentures.Todo.Services.csproj" />
+  </ItemGroup>
+
+</Project>
