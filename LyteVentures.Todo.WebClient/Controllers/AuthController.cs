@@ -24,6 +24,11 @@ namespace LyteVentures.Todo.WebClient.Controllers
         {
             await HttpContext.SignOutAsync();
             return SignOut(
+                new AuthenticationProperties
+                {
+                    RedirectUri = Url.Action("Index", "Home", null, Request.Scheme)
+
+                },
                     OpenIdConnectDefaults.AuthenticationScheme,
                     CookieAuthenticationDefaults.AuthenticationScheme
                 );

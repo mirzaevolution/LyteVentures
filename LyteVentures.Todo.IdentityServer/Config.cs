@@ -63,8 +63,13 @@ namespace LyteVentures.Todo.IdentityServer
                     AllowOfflineAccess = true,
                     RedirectUris =
                     {
+
+                        $"{configuration["TodoWebClient:BaseAddress"]}/signin-oidc",
                         $"{configuration["TodoApi:BaseAddress"]}/swagger/oauth2-redirect.html",
-                        $"{configuration["TodoApi:BaseAddress"]}/swagger/oauth2-redirect.html",
+                    },
+                     PostLogoutRedirectUris =
+                    {
+                       $"{configuration["TodoWebClient:BaseAddress"]}/signout-callback-oidc"
                     },
                     AllowedCorsOrigins =
                     {

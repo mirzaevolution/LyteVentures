@@ -8,7 +8,7 @@
 <h3 class="text-primary">Edit Todo Schedule</h3>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-5">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id"/>
@@ -36,13 +36,39 @@
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
+        <br />
+        
     </div>
+	
 </div>
+<div class="row">
+	<div class="col-md-6">
+		<div>
+			<form asp-action="Delete">
+				<div class="form-group">
+					<p class="text-danger lead">Warning! Data that been deleted cannot be recovered!</p>
+					<input type="hidden" name="Id" value="@Model.Id" />
+					<button type="submit" class="btn btn-danger">Delete</button>
+				</div>
 
+			</form>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="error" value="@ViewBag.Message"/>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script asp-append-version="true">
+        $(document).ready(function () {
+            var message = $("#error").val();
+            if (message && message != "") {
+                alert(message);
+			}
+
+        });
+    </script>
 }

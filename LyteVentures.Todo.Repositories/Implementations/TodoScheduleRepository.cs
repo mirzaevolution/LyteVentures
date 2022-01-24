@@ -40,15 +40,20 @@ namespace LyteVentures.Todo.Repositories.Implementations
             {
                 throw new Exception($"User with id: ${entity.Id} not found");
             }
-            if (await DoesAlreadyExist(entity.UserId, entity.StartSchedule, entity.EndSchedule))
+            var existingSchedule = await _context.TodoSchedules.FirstOrDefaultAsync(c => c.Id == entity.Id);
+            if (existingSchedule.StartSchedule!=entity.StartSchedule && existingSchedule.EndSchedule!=entity.EndSchedule)
             {
-                throw new Exception("Schedule already exists");
+                if (await DoesAlreadyExist(entity.UserId, entity.StartSchedule, entity.EndSchedule))
+                {
+                    throw new Exception("Schedule already exists");
+                }
             }
-            if(!_context.TodoSchedules.Local.Any(c => c.Id == entity.Id))
-            {
-                _context.TodoSchedules.Attach(entity);
-            }
-            _context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            existingSchedule.Title = entity.Title;
+            existingSchedule.Description = entity.Description;
+            existingSchedule.IsActive = entity.IsActive;
+            existingSchedule.StartSchedule = entity.StartSchedule;
+            existingSchedule.EndSchedule = entity.EndSchedule;
+            _context.Entry(existingSchedule).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             await _context.SaveChangesAsync();
             return entity;
         }

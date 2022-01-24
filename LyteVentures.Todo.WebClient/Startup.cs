@@ -54,14 +54,13 @@ namespace LyteVentures.Todo.WebClient
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.TokenValidationParameters.NameClaimType = "name";
-                    options.TokenValidationParameters.RoleClaimType = "role";
                     foreach (string scope in Configuration["IdentityServer:Scopes"].Split(";", StringSplitOptions.RemoveEmptyEntries))
                     {
                         options.Scope.Add(scope);
                     }
-                    options.ClaimActions.MapAll();
                     options.CallbackPath = "/signin-oidc";
                     options.SignedOutCallbackPath = "/signout-callback-oidc";
+                    options.ClaimActions.MapAll();
                 });
 
 
@@ -91,7 +90,7 @@ namespace LyteVentures.Todo.WebClient
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

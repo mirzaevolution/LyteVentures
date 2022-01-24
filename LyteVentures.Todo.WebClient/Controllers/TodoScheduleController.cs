@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -55,6 +56,7 @@ namespace LyteVentures.Todo.WebClient.Controllers
 
         public IActionResult Create()
         {
+            ViewBag.Message = string.Empty;
             return View();
         }
         [HttpPost]
@@ -63,22 +65,31 @@ namespace LyteVentures.Todo.WebClient.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _httpClient.PostAsJsonAsync<CreateTodoViewModel>("/api/v1/TodoSchedule", model);
-                if (response.IsSuccessStatusCode)
+
+                if (model.EndSchedule < model.StartSchedule)
                 {
-                    var dataResponse = JsonConvert.DeserializeObject<DataResponseViewModel<TodoViewModel>>(
-                            await response.Content.ReadAsStringAsync(
-                        ));
-                    if (dataResponse.IsSuccess)
-                    {
-                        return RedirectToAction(nameof(Index), "TodoSchedule");
-                    }
-                    ViewBag.Message = $"DataError: {dataResponse.Message}";
+                    ModelState.AddModelError("", "End schedule cannot be less than start schedule");
                 }
                 else
                 {
-                    ViewBag.Message = $"HttpError: {response.StatusCode.ToString()}";
 
+                    var response = await _httpClient.PostAsJsonAsync<CreateTodoViewModel>("/api/v1/TodoSchedule", model);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var dataResponse = JsonConvert.DeserializeObject<DataResponseViewModel<TodoViewModel>>(
+                                await response.Content.ReadAsStringAsync(
+                            ));
+                        if (dataResponse.IsSuccess)
+                        {
+                            return RedirectToAction(nameof(Index), "TodoSchedule");
+                        }
+                        ViewBag.Message = $"DataError: {dataResponse.Message}";
+                    }
+                    else
+                    {
+                        ViewBag.Message = $"HttpError: {response.StatusCode.ToString()}";
+
+                    }
                 }
             }
             return View(model);
@@ -88,6 +99,7 @@ namespace LyteVentures.Todo.WebClient.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
+            ViewBag.Message = string.Empty;
             var response = await _httpClient.GetAsync($"/api/v1/TodoSchedule/{id}");
             if (response.IsSuccessStatusCode)
             {
@@ -124,22 +136,30 @@ namespace LyteVentures.Todo.WebClient.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _httpClient.PutAsJsonAsync<UpdateTodoViewModel>("/api/v1/TodoSchedule", model);
-                if (response.IsSuccessStatusCode)
+                if (model.EndSchedule < model.StartSchedule)
                 {
-                    var dataResponse = JsonConvert.DeserializeObject<DataResponseViewModel<TodoViewModel>>(
-                            await response.Content.ReadAsStringAsync(
-                        ));
-                    if (dataResponse.IsSuccess)
-                    {
-                        return RedirectToAction(nameof(Index), "TodoSchedule");
-                    }
-                    ViewBag.Message = $"DataError: {dataResponse.Message}";
+                    ModelState.AddModelError("", "End schedule cannot be less than start schedule");
                 }
                 else
                 {
-                    ViewBag.Message = $"HttpError: {response.StatusCode.ToString()}";
 
+                    var response = await _httpClient.PutAsJsonAsync<UpdateTodoViewModel>("/api/v1/TodoSchedule", model);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var dataResponse = JsonConvert.DeserializeObject<DataResponseViewModel<TodoViewModel>>(
+                                await response.Content.ReadAsStringAsync(
+                            ));
+                        if (dataResponse.IsSuccess)
+                        {
+                            return RedirectToAction(nameof(Index), "TodoSchedule");
+                        }
+                        ViewBag.Message = $"DataError: {dataResponse.Message}";
+                    }
+                    else
+                    {
+                        ViewBag.Message = $"HttpError: {response.StatusCode.ToString()}";
+
+                    }
                 }
             }
             return View(model);
@@ -147,7 +167,7 @@ namespace LyteVentures.Todo.WebClient.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete([Required]string id)
         {
             var response = await _httpClient.DeleteAsync($"/api/v1/TodoSchedule/{id}");
             return RedirectToAction(nameof(Index), "TodoSchedule");
