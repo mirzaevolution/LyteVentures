@@ -14,8 +14,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -45,6 +47,84 @@ namespace IdentityServerHost.Quickstart.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+        }
+
+        [Route("/api/account/register")]
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody]CreateNewAccountRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser applicationUser = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    FullName = request.FullName,
+                    Email = request.Email,
+                    UserName = request.Email,
+                    EmailConfirmed = true
+                };
+                var identityResult = await _userManager.CreateAsync(applicationUser, request.Password);
+                if (identityResult.Succeeded)
+                {
+                    identityResult = await _userManager.AddClaimsAsync(applicationUser, new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, applicationUser.FullName),
+                        new Claim(JwtClaimTypes.Email, applicationUser.Email)
+
+                    });
+                    return identityResult.Succeeded ? Ok("Account created successfully") : StatusCode(500, JsonConvert.SerializeObject(identityResult.Errors.Select(c => c.Description)));
+
+                }
+                else
+                {
+                    return StatusCode(500, JsonConvert.SerializeObject(identityResult.Errors.Select(c => c.Description)));
+                }
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpGet]
+        public IActionResult RegisterAccount(string returnUrl)
+        {
+            return View(new RegisterNewAccount
+            {
+                ReturnUrl = returnUrl
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterAccount(RegisterNewAccount model)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser applicationUser = new ApplicationUser
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    UserName = model.Email,
+                    EmailConfirmed = true
+                };
+                var identityResult = await _userManager.CreateAsync(applicationUser, model.Password);
+                if (identityResult.Succeeded)
+                {
+                    identityResult = await _userManager.AddClaimsAsync(applicationUser, new Claim[]
+                    {
+                        new Claim(JwtClaimTypes.Name, applicationUser.FullName),
+                        new Claim(JwtClaimTypes.Email, applicationUser.Email)
+
+                    });
+                    return RedirectToAction(nameof(Login), new { returnUrl = model.ReturnUrl });
+
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Failed to create account. Please try again later!");
+                    return View(model);
+                }
+            }
+            return View(model);
         }
 
         /// <summary>

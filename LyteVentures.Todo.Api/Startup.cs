@@ -49,7 +49,7 @@ namespace LyteVentures.Todo.Api
                       .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                       {
                           options.Authority = Configuration["IDP:BaseAddress"];
-                          options.Audience = Configuration["IIDP:Audience"];
+                          options.Audience = Configuration["IDP:Audience"];
                           options.TokenValidationParameters.NameClaimType = "name";
                       });
             services.AddControllers(options =>
@@ -80,6 +80,11 @@ namespace LyteVentures.Todo.Api
                     }
                 });
                 c.OperationFilter<AuthorizeCheckOperationFilter>();
+            });
+
+            services.AddHttpClient("GeneralIDPClient", options =>
+            {
+                options.BaseAddress = new Uri($"{Configuration["IDP:BaseAddress"]}");
             });
         }
 

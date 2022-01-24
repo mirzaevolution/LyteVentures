@@ -54,8 +54,8 @@ namespace LyteVentures.Todo.Api.Controllers
         public async Task<IActionResult> Post([FromBody] InsertTodoRequest request)
         {
             string userId = User.FindFirstValue("sub");
-            request.UserId = userId;
             var dto = _mapper.Map<InsertTodoRequest, TodoScheduleDto>(request);
+            dto.UserId = userId;
             dto = await _todoScheduleService.Insert(dto);
             return Ok(new DataResponse<TodoScheduleDto>
             {
@@ -81,9 +81,9 @@ namespace LyteVentures.Todo.Api.Controllers
         public async Task<IActionResult> Put([FromBody] UpdateTodoRequest request)
         {
             string userId = User.FindFirstValue("sub");
-            request.UserId = userId;
             var dto = _mapper.Map<UpdateTodoRequest, TodoScheduleDto>(request);
-            dto = await _todoScheduleService.Insert(dto);
+            dto.UserId = userId;
+            dto = await _todoScheduleService.Update(dto);
             return Ok(new DataResponse<TodoScheduleDto>
             {
                 IsSuccess = true,
@@ -91,6 +91,17 @@ namespace LyteVentures.Todo.Api.Controllers
             });
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            string userId = User.FindFirstValue("sub");
+            bool result = await _todoScheduleService.Delete(userId, id);
+            return Ok(new BaseResponse
+            {
+                IsSuccess = result,
+                Message = result ? "Todo schedule removed successfully" : "Failed to remove the schedule"
+            });
+        }
 
     }
 }

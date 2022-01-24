@@ -53,6 +53,17 @@ namespace LyteVentures.Todo.Repositories.Implementations
             return entity;
         }
 
+        public async Task<bool> Delete(string userId, string todoScheduleId)
+        {
+            var entity = await _context.TodoSchedules.FirstOrDefaultAsync(c => c.UserId == userId && c.Id == todoScheduleId);
+            if (entity == null)
+            {
+                throw new Exception($"Todo schedule with id: {todoScheduleId} not found");
+            }
+            _context.TodoSchedules.Remove(entity);
+            int total = await _context.SaveChangesAsync();
+            return total > 0;
+        }
         public async Task<TodoSchedule> GetById(string id)
         {
             TodoSchedule entity = await _context.TodoSchedules.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);

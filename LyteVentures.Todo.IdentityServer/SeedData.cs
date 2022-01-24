@@ -36,7 +36,7 @@ namespace LyteVentures.Todo.IdentityServer
                     context.Database.Migrate();
 
                     var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                    var demoUser = userMgr.FindByNameAsync("alice").Result;
+                    var demoUser = userMgr.FindByEmailAsync("ghulamcyber@hotmail.com").Result;
                     if (demoUser == null)
                     {
                         demoUser = new ApplicationUser
@@ -44,6 +44,7 @@ namespace LyteVentures.Todo.IdentityServer
                             UserName = "ghulamcyber@hotmail.com",
                             Email = "ghulamcyber@hotmail.com",
                             EmailConfirmed = true,
+                            FullName = "Mirza Ghulam Rasyid"
                         };
                         var result = userMgr.CreateAsync(demoUser, "@Future30").Result;
                         if (!result.Succeeded)
@@ -52,8 +53,8 @@ namespace LyteVentures.Todo.IdentityServer
                         }
 
                         result = userMgr.AddClaimsAsync(demoUser, new Claim[]{
-                            new Claim(JwtClaimTypes.Name, "Mirza Ghulam Rasyid"),
-                            new Claim(JwtClaimTypes.Email, "ghulamcyber@hotmail.com")
+                            new Claim(JwtClaimTypes.Name, demoUser.FullName),
+                            new Claim(JwtClaimTypes.Email, demoUser.Email)
                         }).Result;
                         if (!result.Succeeded)
                         {

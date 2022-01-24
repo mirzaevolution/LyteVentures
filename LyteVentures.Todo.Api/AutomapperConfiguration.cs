@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LyteVentures.Todo.Api.Models;
 using LyteVentures.Todo.DataTransferObjects;
 using LyteVentures.Todo.Entities;
 using System;
@@ -20,6 +21,9 @@ namespace LyteVentures.Todo.Api
             CreateMap<TodoSchedule, TodoScheduleDto>()
                 .ForMember(dst => dst.CreatedBy, src => src.MapFrom(prop => prop.User.FullName ?? "-"));
             CreateMap<TodoScheduleDto, TodoSchedule>();
+
+            CreateMap<InsertTodoRequest, TodoScheduleDto>();
+            CreateMap<UpdateTodoRequest, TodoScheduleDto>();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace LyteVentures.Todo.Services.Interfaces
         Task<IEnumerable<TodoScheduleDto>> GetAll(string userId);
         Task<TodoScheduleDto> Insert(TodoScheduleDto dto);
         Task<TodoScheduleDto> Update(TodoScheduleDto dto);
+        Task<bool> Delete(string userId, string todoScheduleId);
         Task<bool> DoesAlreadyExist(string userId, DateTime startSchedule, DateTime endSchedule);
     }
 }

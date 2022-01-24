@@ -12,6 +12,5 @@ namespace LyteVentures.Todo.Api.Models
         public DateTime StartSchedule { get; set; }
         [Required]
         public DateTime EndSchedule { get; set; }
-        public string UserId { get; set; }
     }
 }

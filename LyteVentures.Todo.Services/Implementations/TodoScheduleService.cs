@@ -35,31 +35,41 @@ namespace LyteVentures.Todo.Services.Implementations
 
         public async Task<TodoScheduleDto> Insert(TodoScheduleDto dto)
         {
-            if (dto.StartSchedule < dto.EndSchedule)
+            if (dto.EndSchedule < dto.StartSchedule)
             {
-                throw new Exception("Start schedule cannot be less than end schedule");
+                throw new Exception("End schedule cannot be less than start schedule");
             }
             var entity = _mapper.Map<TodoScheduleDto, TodoSchedule>(dto);
             entity = await _todoRepository.Insert(entity);
+            //re-gain to get relationship data
+            entity = await _todoRepository.GetById(entity.Id);
             return _mapper.Map<TodoSchedule, TodoScheduleDto>(entity);
         }
 
         public async Task<TodoScheduleDto> Update(TodoScheduleDto dto)
         {
-            if (dto.StartSchedule < dto.EndSchedule)
+            if (dto.EndSchedule < dto.StartSchedule)
             {
-                throw new Exception("Start schedule cannot be less than end schedule");
+                throw new Exception("End schedule cannot be less than start schedule");
             }
             var entity = _mapper.Map<TodoScheduleDto, TodoSchedule>(dto);
             entity = await _todoRepository.Update(entity);
+            //re-gain to get relationship data
+            entity = await _todoRepository.GetById(entity.Id);
             return _mapper.Map<TodoSchedule, TodoScheduleDto>(entity);
+        }
+
+        public async Task<bool> Delete(string userId, string todoScheduleId)
+        {
+            bool result = await _todoRepository.Delete(userId, todoScheduleId);
+            return result;
         }
 
         public async Task<bool> DoesAlreadyExist(string userId, DateTime startSchedule, DateTime endSchedule)
         {
-            if (startSchedule < endSchedule)
+            if (endSchedule < startSchedule)
             {
-                throw new Exception("Start schedule cannot be less than end schedule");
+                throw new Exception("End schedule cannot be less than start schedule");
             }
             bool exists = await _todoRepository.DoesAlreadyExist(userId, startSchedule, endSchedule);
             return exists;

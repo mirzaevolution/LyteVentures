@@ -11,6 +11,7 @@ namespace LyteVentures.Todo.Repositories.Interfaces
         Task<TodoSchedule> Insert(TodoSchedule entity);
 
         Task<TodoSchedule> Update(TodoSchedule entity);
+        Task<bool> Delete(string userId, string todoScheduleId);
 
         Task<TodoSchedule> GetById(string id);
 
